@@ -12,9 +12,12 @@ pub trait Queue {
     ///
     /// An id for an intent for as long as the queue holds it, and is
     /// never reused for another.
-    type Id: Copy + Eq + Hash + Debug;
+    type Id: Copy + Ord + Hash + Debug;
 
     /// Every intent with its id, in no particular order.
+    ///
+    /// Repeated calls must yield the same intents as long as the queue is not mutated
+    /// through `&mut`: planning reads the queue more than once and panics if they differ.
     fn iter(&self) -> impl Iterator<Item = (Self::Id, &Intent)>;
 }
 
