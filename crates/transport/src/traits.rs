@@ -1,7 +1,6 @@
 //! Traits for message-oriented transport capabilities.
 
 use std::error::Error;
-use std::future::Future;
 
 use crate::Privacy;
 

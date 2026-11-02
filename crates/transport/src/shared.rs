@@ -1,6 +1,5 @@
 //! Adapter for splitting a shared channel backend.
 
-use std::future::Future;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
