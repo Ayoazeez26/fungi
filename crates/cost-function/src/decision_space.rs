@@ -17,10 +17,7 @@ impl<'a, Q: Queue> DecisionSpace<'a, Q> {
 
     // currently this yields only the trivial partition, peel intents off once there is a cost to compare.
     // TODO: this should iterate and peel off one intent, putting it in its own batch each time.
-    pub(crate) fn iter(&self) -> impl Iterator<Item = PlanIntent<Q::Id>>
-    where
-        Q::Id: Ord,
-    {
+    pub(crate) fn iter(&self) -> impl Iterator<Item = PlanIntent<Q::Id>> {
         let intents: BTreeSet<Q::Id> = self.queue.iter().map(|(id, _)| id).collect();
 
         (!intents.is_empty())
