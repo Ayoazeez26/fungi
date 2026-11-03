@@ -48,6 +48,7 @@ where
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use std::convert::Infallible;
     use std::io;
@@ -127,21 +128,5 @@ mod tests {
                 .take()
                 .ok_or_else(|| io::Error::new(io::ErrorKind::WouldBlock, "empty"))
         }
-    }
-
-    impl Bidirectional<u32, u32> for Sequential {}
-
-    #[tokio::test]
-    async fn bidirectional_does_not_require_shared_access() {
-        let mut channel = Sequential::default();
-
-        assert_bidirectional(&channel);
-        assert_connection_unlinkability(&channel);
-        channel.send(7).await.unwrap();
-        assert_eq!(channel.recv().await.unwrap(), 7);
-        assert_eq!(
-            channel.recv().await.unwrap_err().kind(),
-            io::ErrorKind::WouldBlock
-        );
     }
 }

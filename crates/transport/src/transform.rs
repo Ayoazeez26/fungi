@@ -1,6 +1,5 @@
 //! Type-directed channel transformations.
 
-use std::future::Future;
 use std::marker::PhantomData;
 
 use crate::{RecvChannel, SendChannel};
@@ -65,7 +64,6 @@ impl<T, W, C: RecvChannel<W>, F: FnMut(W) -> T + Send> RecvChannel<T> for MapAft
 #[cfg(test)]
 mod tests {
     use std::convert::Infallible;
-    use std::future::Future;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -75,6 +73,10 @@ mod tests {
     use crate::{
         ConnectionUnlinkability, MapAfterRecv, MapBeforeSend, RecvChannel, SendChannel, Unspecified,
     };
+
+    fn require_send<F: Future + Send>(future: F) -> F {
+        future
+    }
 
     #[test]
     fn adapters_keep_the_sender_privacy() {
@@ -142,10 +144,6 @@ mod tests {
             }
         }
 
-        fn require_send<F: Future + Send>(future: F) -> F {
-            future
-        }
-
         let received = Arc::new(AtomicUsize::new(0));
         let mut sender = MapBeforeSend::new(Sink(Arc::clone(&received)), std::rc::Rc::new);
         require_send(sender.send(42)).await.unwrap();
@@ -155,10 +153,6 @@ mod tests {
     // The `Rc` is consumed before the send future is created, so the future stays `Send`.
     #[tokio::test]
     async fn map_before_send_accepts_non_send_messages() {
-        fn require_send<F: Future + Send>(future: F) -> F {
-            future
-        }
-
         let (sender, mut receiver) = unidirectional(1);
         let mut sender = MapBeforeSend::new(sender, |message: std::rc::Rc<u32>| *message);
         require_send(sender.send(std::rc::Rc::new(42)))
