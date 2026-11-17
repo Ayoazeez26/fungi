@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: fungi-protocol/post-range-diff-comment@b682cd0404cd8ffbdb17c1abd3c52b7399d5349c # main
+      - uses: fungi-protocol/post-range-diff-comment@c8aa2faa644a800a137e07ac705691fdfb069560 # v1.0.0
